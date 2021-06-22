@@ -31,7 +31,7 @@ const SignUp = (props) => {
   }
 
   return (
-    <Grid container xs={12} md={7} direction="column" justify="center">
+    <Grid item container xs={12} md={7} direction="column" justify="center">
       <Box position="absolute" top="40px" right="40px">
         <Grid container alignItems="center" justify="flex-end">
           <Box mr={3}>

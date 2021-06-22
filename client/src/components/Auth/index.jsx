@@ -32,7 +32,7 @@ export default function Auth({ type }) {
             className={classes.gradient}
           >
             <img src={bubble} alt="logo" />
-            <Grid lg={6} md={10} justify="center">
+            <Grid item lg={6} md={10}>
               <Typography
                 variant="h4"
                 align="center"
