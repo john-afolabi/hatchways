@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
         senderId !==
         (conversation.dataValues.user1Id || conversation.dataValues.user2Id)
       ) {
-        res.sendStatus(401);
+        return res.sendStatus(401);
       }
       const message = await Message.create({ senderId, text, conversationId });
       return res.json({ message, sender });
