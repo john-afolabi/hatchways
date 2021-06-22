@@ -2,6 +2,11 @@ const router = require('express').Router();
 const { User } = require('../../db/models');
 const jwt = require('jsonwebtoken');
 
+const cookieOptions = {
+  maxAge: 24 * 60 * 60 * 1000,
+  httpOnly: true,
+};
+
 router.post('/register', async (req, res, next) => {
   try {
     // expects {username, email, password} in req.body
@@ -29,10 +34,7 @@ router.post('/register', async (req, res, next) => {
 
     res
       .status(201)
-      .cookie('token', token, {
-        maxAge: 24 * 60 * 50 * 1000,
-        httpOnly: true,
-      })
+      .cookie('token', token, cookieOptions)
       .json({ ...user.dataValues });
   } catch (error) {
     if (error.name === 'SequelizeUniqueConstraintError') {
@@ -71,10 +73,7 @@ router.post('/login', async (req, res, next) => {
 
       res
         .status(200)
-        .cookie('token', token, {
-          maxAge: 24 * 60 * 50 * 1000,
-          httpOnly: true,
-        })
+        .cookie('token', token, cookieOptions)
         .json({ ...user.dataValues });
     }
   } catch (error) {
