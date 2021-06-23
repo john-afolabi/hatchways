@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Grid,
@@ -13,9 +13,9 @@ import {
 } from '@material-ui/core';
 import { login } from '../../store/utils/thunkCreators';
 import useStyles from './styles';
+import CTA from './CTA';
 
 const Login = (props) => {
-  const history = useHistory();
   const { user, login } = props;
   const classes = useStyles();
 
@@ -33,24 +33,11 @@ const Login = (props) => {
 
   return (
     <Grid item container xs={12} md={7} direction="column" justify="center">
-      <Box position="absolute" top="40px" right="40px">
-        <Grid container alignItems="center" justify="flex-end">
-          <Box mr={3}>
-            <Typography color="textSecondary">
-              Don't have an account?
-            </Typography>
-          </Box>
-          <Button
-            onClick={() => history.push('/register')}
-            size="large"
-            className={classes.secondaryBtn}
-            variant="text"
-            color="secondary"
-          >
-            Create account
-          </Button>
-        </Grid>
-      </Box>
+      <CTA
+        ctaText="Don't have an account?"
+        buttonText="Create account"
+        path="/register"
+      />
       <Box pl="10vw">
         <Grid container direction="column">
           <Typography variant="h4">Welcome back!</Typography>
