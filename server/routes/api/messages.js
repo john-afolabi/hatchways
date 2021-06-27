@@ -18,8 +18,8 @@ router.post('/', async (req, res, next) => {
       });
 
       if (
-        senderId !==
-        (conversation.dataValues.user1Id || conversation.dataValues.user2Id)
+        senderId !== conversation.dataValues.user1Id &&
+        senderId !== conversation.dataValues.user2Id
       ) {
         return res.sendStatus(401);
       }
