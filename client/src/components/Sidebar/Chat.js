@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import { Box, Chip } from '@material-ui/core';
+import React from 'react';
+import { Box, Chip, makeStyles } from '@material-ui/core';
 import { BadgeAvatar, ChatContent } from '../Sidebar';
-import { withStyles } from '@material-ui/core/styles';
 import { setActiveChat } from '../../store/activeConversation';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { saveReadStatus } from '../../store/utils/thunkCreators';
 
-const styles = {
+const useStyles = makeStyles(() => ({
   root: {
     borderRadius: 8,
     height: 80,
@@ -18,52 +17,37 @@ const styles = {
       cursor: 'grab',
     },
   },
-};
+}));
 
-class Chat extends Component {
-  handleClick = async (conversation) => {
-    await this.props.setActiveChat(conversation.otherUser.username);
+const Chat = ({ conversation }) => {
+  const classes = useStyles();
+
+  const dispatch = useDispatch();
+  const { otherUser, unreadMessagesCount } = conversation;
+
+  const handleClick = async (conversation) => {
+    await dispatch(setActiveChat(conversation.otherUser.username));
     if (!!conversation?.unreadMessagesCount) {
-      await this.props.saveReadStatus(conversation.otherUser.id);
+      await dispatch(saveReadStatus(conversation.otherUser.id));
     }
   };
 
-  render() {
-    const { classes } = this.props;
-    const otherUser = this.props.conversation.otherUser;
-    const unreadMessagesCount = this.props.conversation.unreadMessagesCount;
-
-    return (
-      <Box
-        onClick={() => this.handleClick(this.props.conversation)}
-        className={classes.root}
-      >
-        <>
-          <BadgeAvatar
-            photoUrl={otherUser.photoUrl}
-            username={otherUser.username}
-            online={otherUser.online}
-            sidebar={true}
-          />
-          <ChatContent conversation={this.props.conversation} />
-        </>
-        {!!unreadMessagesCount && (
-          <Chip color="primary" size="small" label={unreadMessagesCount} />
-        )}
-      </Box>
-    );
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setActiveChat: (id) => {
-      dispatch(setActiveChat(id));
-    },
-    saveReadStatus: (senderId) => {
-      dispatch(saveReadStatus(senderId));
-    },
-  };
+  return (
+    <Box onClick={() => handleClick(conversation)} className={classes.root}>
+      <>
+        <BadgeAvatar
+          photoUrl={otherUser.photoUrl}
+          username={otherUser.username}
+          online={otherUser.online}
+          sidebar={true}
+        />
+        <ChatContent conversation={conversation} />
+      </>
+      {!!unreadMessagesCount && (
+        <Chip color="primary" size="small" label={unreadMessagesCount} />
+      )}
+    </Box>
+  );
 };
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(Chat));
+export default Chat;
