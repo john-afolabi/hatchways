@@ -58,10 +58,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('new-message', (data) => {
-    socket.broadcast.emit('new-message', {
-      message: data.message,
-      sender: data.sender,
-    });
+    if (!!onlineUsers[data.recipientId]) {
+      onlineUsers[data.recipientId].forEach((id) => {
+        socket.to(id).emit('new-message', {
+          message: data.message,
+          sender: data.sender,
+        });
+      });
+    }
   });
 
   socket.on('logout', (id) => {
