@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
-import { Search, Chat, CurrentUser } from './index.js';
+import { Search, Chat, CurrentUser } from './index.jsx';
 
 const useStyles = makeStyles(() => ({
   root: {

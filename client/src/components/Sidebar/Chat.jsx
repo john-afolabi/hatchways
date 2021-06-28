@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Chip, makeStyles } from '@material-ui/core';
-import { BadgeAvatar, ChatContent } from '../Sidebar';
+import { BadgeAvatar, ChatContent } from '.';
 import { setActiveChat } from '../../store/activeConversation';
 import { useDispatch } from 'react-redux';
 import { saveReadStatus } from '../../store/utils/thunkCreators';
