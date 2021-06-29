@@ -112,7 +112,6 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 export const saveReadStatus = (senderId) => async (dispatch) => {
   try {
     await axios.put(`/api/messages/read/${senderId}`);
-    console.log('done');
     dispatch(markMessageRead(senderId));
   } catch (error) {
     console.error(error);
