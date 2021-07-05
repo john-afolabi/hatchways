@@ -3,12 +3,17 @@ const { Op } = require('sequelize');
 const { Conversation, Message } = require('../../db/models');
 const onlineUsers = require('../../onlineUsers');
 
+// Check USER Middleware
+const checkUser = (req, res, next) => {
+  if (!req.user) {
+    return res.sendStatus(401);
+  }
+  next();
+};
+
 // expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)
-router.post('/', async (req, res, next) => {
+router.post('/', checkUser, async (req, res, next) => {
   try {
-    if (!req.user) {
-      return res.sendStatus(401);
-    }
     const senderId = req.user.id;
     const { recipientId, text, conversationId, sender } = req.body;
 
@@ -54,12 +59,16 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.put('/read/:senderId', async (req, res, next) => {
+router.put('/read/:senderId', checkUser, async (req, res, next) => {
   try {
     const { senderId } = req.params;
     const userId = req.user.id;
 
     const conversation = await Conversation.findConversation(userId, senderId);
+
+    if (!conversation) {
+      res.sendStatus(404);
+    }
 
     await Message.update(
       { readStatus: true },
@@ -68,6 +77,7 @@ router.put('/read/:senderId', async (req, res, next) => {
           [Op.and]: {
             senderId,
             conversationId: conversation.id,
+            readStatus: false,
           },
         },
       }
