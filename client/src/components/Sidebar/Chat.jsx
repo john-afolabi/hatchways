@@ -27,22 +27,21 @@ const Chat = ({ conversation }) => {
 
   const handleClick = async (conversation) => {
     await dispatch(setActiveChat(conversation.otherUser.username));
-    if (!!conversation?.unreadMessagesCount) {
+    if (conversation?.unreadMessagesCount) {
       await dispatch(saveReadStatus(conversation.otherUser.id));
     }
   };
 
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
-      <>
-        <BadgeAvatar
-          photoUrl={otherUser.photoUrl}
-          username={otherUser.username}
-          online={otherUser.online}
-          sidebar={true}
-        />
-        <ChatContent conversation={conversation} />
-      </>
+      <BadgeAvatar
+        photoUrl={otherUser.photoUrl}
+        username={otherUser.username}
+        online={otherUser.online}
+        sidebar={true}
+      />
+      <ChatContent conversation={conversation} />
+
       {!!unreadMessagesCount && (
         <Chip color="primary" size="small" label={unreadMessagesCount} />
       )}

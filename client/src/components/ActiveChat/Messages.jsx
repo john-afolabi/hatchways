@@ -24,6 +24,12 @@ const Messages = ({ messages, otherUser, userId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const reverseMessages = messages.slice().reverse();
+
+  const lastSentMessageId = reverseMessages.find(
+    (message) => message.senderId === userId && message.readStatus === true
+  )?.id;
+
   useEffect(() => {
     scrollToBottom();
   }, [messages.length]);
@@ -37,8 +43,9 @@ const Messages = ({ messages, otherUser, userId }) => {
             key={message.id}
             text={message.text}
             time={time}
-            readStatus={message.readStatus}
             otherUser={otherUser}
+            readStatus={message.readStatus}
+            lastSentMessage={lastSentMessageId === message.id}
           />
         ) : (
           <OtherUserBubble
