@@ -4,17 +4,21 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
-} from "./utils/reducerFunctions";
+  markMessageReadToStore,
+  markMessagesAsRead,
+} from './utils/reducerFunctions';
 
 // ACTIONS
 
-const GET_CONVERSATIONS = "GET_CONVERSATIONS";
-const SET_MESSAGE = "SET_MESSAGE";
-const ADD_ONLINE_USER = "ADD_ONLINE_USER";
-const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
-const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
-const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
-const ADD_CONVERSATION = "ADD_CONVERSATION";
+const GET_CONVERSATIONS = 'GET_CONVERSATIONS';
+const SET_MESSAGE = 'SET_MESSAGE';
+const ADD_ONLINE_USER = 'ADD_ONLINE_USER';
+const REMOVE_OFFLINE_USER = 'REMOVE_OFFLINE_USER';
+const SET_SEARCHED_USERS = 'SET_SEARCHED_USERS';
+const CLEAR_SEARCHED_USERS = 'CLEAR_SEARCHED_USERS';
+const ADD_CONVERSATION = 'ADD_CONVERSATION';
+const MARK_MESSAGE_READ = 'MARK_MESSAGE_READ';
+const MARK_CONVERSATION_AS_READ = 'MARK_CONVERSATION_AS_READ';
 
 // ACTION CREATORS
 
@@ -29,6 +33,20 @@ export const setNewMessage = (message, sender) => {
   return {
     type: SET_MESSAGE,
     payload: { message, sender: sender || null },
+  };
+};
+
+export const markMessageRead = (senderId) => {
+  return {
+    type: MARK_MESSAGE_READ,
+    senderId,
+  };
+};
+
+export const markConversationAsRead = (conversationId) => {
+  return {
+    type: MARK_CONVERSATION_AS_READ,
+    payload: { conversationId },
   };
 };
 
@@ -91,6 +109,11 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
+    case MARK_MESSAGE_READ:
+      return markMessageReadToStore(state, action.senderId);
+    case MARK_CONVERSATION_AS_READ:
+      const { conversationId } = action.payload;
+      return markMessagesAsRead(state, conversationId);
     default:
       return state;
   }
