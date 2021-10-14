@@ -19,7 +19,13 @@ router.get('/', async (req, res, next) => {
           user2Id: userId,
         },
       },
-      attributes: ['id'],
+      attributes: [
+        'id',
+        'user1UnreadCount',
+        'user2UnreadCount',
+        'user1Id',
+        'user2Id',
+      ],
       order: [[Message, 'createdAt', 'ASC']],
       include: [
         { model: Message, order: ['createdAt', 'ASC'] },
@@ -69,15 +75,21 @@ router.get('/', async (req, res, next) => {
       }
 
       // set properties for notification count and latest message preview
-      convoJSON.latestMessageText =
-        convoJSON.messages[convoJSON.messages.length - 1].text;
-      conversations[i] = convoJSON;
+      const lastIdx = convoJSON.messages.length - 1;
+      convoJSON.latestMessageText = convoJSON.messages[lastIdx].text;
 
-      const unreadMessagesCount = await Message.count({
-        where: { readStatus: false, senderId: convoJSON.otherUser.id },
-      });
+      let unreadMessagesCount;
+
+      if (convoJSON.user1Id === userId) {
+        unreadMessagesCount = convoJSON.user1UnreadCount;
+      } else {
+        unreadMessagesCount = convoJSON.user2UnreadCount;
+      }
 
       convoJSON.unreadMessagesCount = unreadMessagesCount;
+
+      convoJSON.lastRead = findLastRead(convoJSON.messages, userId);
+      conversations[i] = convoJSON;
     }
 
     // sort conversations by last message sent
@@ -92,5 +104,44 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+
+router.put('/read', async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const senderId = req.user.id;
+    const { recipientId } = req.body;
+
+    const conversation = await Conversation.findConversation(
+      senderId,
+      recipientId
+    );
+
+    if (!conversation) {
+      return res.sendStatus(404);
+    }
+
+    if (senderId === conversation.user2Id) {
+      conversation.user2UnreadCount = 0;
+    } else {
+      conversation.user1UnreadCount = 0;
+    }
+    await conversation.save();
+    res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+const findLastRead = (messages, userId) => {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const msg = messages[i];
+    if (msg.readStatus && msg.senderId === userId) {
+      return msg.id;
+    }
+  }
+  return -1;
+};
 
 module.exports = router;
