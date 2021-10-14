@@ -24,12 +24,20 @@ router.post('/', checkUser, async (req, res, next) => {
       });
 
       if (
-        senderId !==
-        (conversation.dataValues.user1Id || conversation.dataValues.user2Id)
+        senderId !== conversation.dataValues.user1Id &&
+        senderId !== conversation.dataValues.user2Id
       ) {
         return res.sendStatus(401);
       }
       const message = await Message.create({ senderId, text, conversationId });
+
+      if (recipientId === conversation.dataValues.user2Id) {
+        conversation.user2UnreadCount += 1;
+      } else {
+        conversation.user1UnreadCount += 1;
+      }
+
+      await conversation.save();
       return res.json({ message, sender });
     }
     // if we don't have conversation id, find a conversation to make sure it doesn't already exist
@@ -43,6 +51,7 @@ router.post('/', checkUser, async (req, res, next) => {
       conversation = await Conversation.create({
         user1Id: senderId,
         user2Id: recipientId,
+        user2UnreadCount: 1,
       });
       if (onlineUsers.includes(sender.id)) {
         sender.online = true;
