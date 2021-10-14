@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Chip, makeStyles } from '@material-ui/core';
 import { BadgeAvatar, ChatContent } from '.';
 import { setActiveChat } from '../../store/activeConversation';
 import { useDispatch } from 'react-redux';
-import { saveReadStatus } from '../../store/utils/thunkCreators';
+import { readMsgs } from '../../store/utils/thunkCreators';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -28,9 +28,11 @@ const Chat = ({ conversation }) => {
   const handleClick = async (conversation) => {
     await dispatch(setActiveChat(conversation.otherUser.username));
     if (conversation?.unreadMessagesCount) {
-      await dispatch(saveReadStatus(conversation.otherUser.id));
+      await dispatch(readMsgs(conversation));
     }
   };
+
+  useEffect(() => {}, [unreadMessagesCount]);
 
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>

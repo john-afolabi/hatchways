@@ -92,3 +92,15 @@ export const markMessageReadToStore = (state, senderId) => {
     return convo;
   });
 };
+
+export const markMessagesAsRead = (state, conversationId) => {
+  return state.map((convo) => {
+    if (convo.id === conversationId) {
+      const convoCopy = { ...convo };
+      convoCopy.unreadMessagesCount = 0;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
